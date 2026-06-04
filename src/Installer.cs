@@ -1,8 +1,9 @@
-using Eto.Forms;
-using Eto.Drawing;
-using Eto;
-using Application = Eto.Forms.Application;
 using bedrockRInstall.ui;
+using Eto;
+using Eto.Drawing;
+using Eto.Forms;
+using System.Windows.Documents;
+using Application = Eto.Forms.Application;
 
 namespace bedrockRInstall
 {
@@ -11,7 +12,24 @@ namespace bedrockRInstall
 
         public static Color BG = Color.FromRgb(0x202020);
         public static HttpClient client = new();
+        public static Font mainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 12);
+        public static Font mainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 16);
         public HttpRequestMessage onlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
+
+        public static void Center(Window window)
+        {
+            window.UpdateLayout();
+            var screenSize = window.Screen.WorkingArea;
+            float screenW = screenSize.Size.Width;
+            float screenH = screenSize.Size.Height;
+            float windowW = window.ClientSize.Width;
+            float windowH = window.ClientSize.Height;
+
+            float posX = (screenW / 2f) - (windowW / 2f);
+            float posY = (screenH / 2f) - (windowH / 2f);
+
+            window.Location = new Point((int)posX, (int)posY);
+        }
 
         [STAThread]
         public static void Main(string[] args)
@@ -31,6 +49,7 @@ namespace bedrockRInstall
             Eto.Style.Add<TextControl>("bedrockR", con =>
             {
                 con.TextColor = Colors.White;
+                con.Font = mainFont;
             });
         }
 
@@ -61,9 +80,14 @@ namespace bedrockRInstall
             var installOnlineButton = new Button() { Text = "Install Online", Style = "bedrockR", Enabled = false };
             var versionsButton = new Button((o,e) => { new VersionsForm().ShowModal(this); }) { Text = "View Versions", Style = "bedrockR", Enabled = false };
 
-            var onlineRes = client.Send(onlineReq);
-            installOnlineButton.Enabled = onlineRes.IsSuccessStatusCode;
-            versionsButton.Enabled = onlineRes.IsSuccessStatusCode;
+            bool online = false;
+            try
+            {
+                var onlineRes = client.Send(onlineReq);
+                online = onlineRes.IsSuccessStatusCode;
+            } catch (Exception) { }
+            installOnlineButton.Enabled = online;
+            versionsButton.Enabled = online;
 
             main.Items.Add(top);
             main.Items.Add(bottom);
@@ -77,7 +101,7 @@ namespace bedrockRInstall
             bottom.Items.Add(versionsButton);
 
             Content = main;
-
+            Center(this);
         }
     }
 }

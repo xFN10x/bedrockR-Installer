@@ -1,5 +1,6 @@
 ﻿{
 	"version": "a2.1",
 	"semVer": 9,
-	"bundled":  true
+	"bundled": true,
+	"desc": "Alpha release, adds settings menu, and themes."
 }

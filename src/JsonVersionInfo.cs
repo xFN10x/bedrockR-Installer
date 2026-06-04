@@ -13,6 +13,9 @@ namespace bedrockRInstall
         public required int NumericVersion;
 
         [JsonPropertyName("bundled")]
-        public bool Bundled;
+        public required bool Bundled;
+
+        [JsonPropertyName("desc")]
+        public string Description = "(No description.)";
     }
 }
