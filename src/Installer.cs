@@ -2,8 +2,18 @@ using bedrockRInstall.ui;
 using Eto;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Wpf.Forms.Controls;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Windows.Media;
 using Application = Eto.Forms.Application;
+using Button = Eto.Forms.Button;
+using Color = Eto.Drawing.Color;
+using Orientation = Eto.Forms.Orientation;
+using Padding = Eto.Drawing.Padding;
+using Point = Eto.Drawing.Point;
 
 namespace bedrockRInstall
 {
@@ -11,12 +21,13 @@ namespace bedrockRInstall
     {
 
         public static Color BG = Color.FromRgb(0x202020);
+        public static Color ControlBG = Color.FromRgb(0x343434);
         public static HttpClient client = new();
-        public static Font mainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 12);
-        public static Font mainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 16);
+        public static Font mainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 10);
+        public static Font mainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 14);
         public HttpRequestMessage onlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
 
-        public static void Center(Window window)
+        public static void Center(Eto.Forms.Window window)
         {
             window.UpdateLayout();
             var screenSize = window.Screen.WorkingArea;
@@ -34,25 +45,38 @@ namespace bedrockRInstall
         [STAThread]
         public static void Main(string[] args)
         {
+            SetupStyle();
             new Application(Platform.Detect).Run(new Installer());
         }
 
         public static void SetupStyle()
         {
 
-            Eto.Style.Add<Eto.Forms.Button>("bedrockR", con =>
-            {
-                var cont = con.ControlObject as System.Windows.Forms.Button;
-                cont.BackColor = System.Drawing.Color.FromArgb((int)(BG.A * 255), (int)(BG.R * 255), (int)(BG.G * 255), (int)(BG.B * 255));
-             });
-
             Eto.Style.Add<TextControl>("bedrockR", con =>
             {
-                con.TextColor = Colors.White;
+                con.TextColor = Eto.Drawing.Colors.White;
                 con.Font = mainFont;
             });
-        }
 
+            Eto.Style.Add<Eto.Forms.Button>("bedrockR", con =>
+            {
+                con.BackgroundColor = ControlBG;
+                var cont = con.ControlObject as EtoButton;
+                if (cont == null) return;
+                cont.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xff, 0x48, 0x48, 0x48));
+                var selectedBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xff, 0x4C, 0xff, 0x00));
+
+                var selectedTrigger = new Trigger() { Property = EtoButton.IsFocusedProperty, Value = true };
+                selectedTrigger.Setters.Add(new Setter(EtoButton.BorderBrushProperty, selectedBrush));
+
+                var style = new System.Windows.Style(typeof(EtoButton));
+                style.Setters.Add(new Setter(EtoButton.TemplateProperty, new ControlTemplate(typeof(EtoButton)) { } ));
+                style.Setters.Add(new Setter(EtoButton.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.White)));
+                style.Triggers.Add(selectedTrigger);
+                cont.Style = style;
+            });
+
+        }
         public Installer()
         {
             Title = "bedrockR Installer";
@@ -77,8 +101,8 @@ namespace bedrockRInstall
             else
                 installBundledButton.Enabled = false;
 
-            var installOnlineButton = new Button() { Text = "Install Online", Style = "bedrockR", Enabled = false };
-            var versionsButton = new Button((o,e) => { new VersionsForm().ShowModal(this); }) { Text = "View Versions", Style = "bedrockR", Enabled = false };
+            var installOnlineButton = new Button((o, e) => { new VersionsForm().ShowModal(this); }) { Text = "Install Online", Style = "bedrockR", Enabled = false };
+            //var versionsButton = new Button((o,e) => { new VersionsForm().ShowModal(this); }) { Text = "View Versions", Style = "bedrockR", Enabled = false };
 
             bool online = false;
             try
@@ -87,7 +111,6 @@ namespace bedrockRInstall
                 online = onlineRes.IsSuccessStatusCode;
             } catch (Exception) { }
             installOnlineButton.Enabled = online;
-            versionsButton.Enabled = online;
 
             main.Items.Add(top);
             main.Items.Add(bottom);
@@ -98,7 +121,6 @@ namespace bedrockRInstall
             bottom.Spacing = 10;
             bottom.Items.Add(installBundledButton);
             bottom.Items.Add(installOnlineButton);
-            bottom.Items.Add(versionsButton);
 
             Content = main;
             Center(this);

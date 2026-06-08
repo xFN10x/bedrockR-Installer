@@ -16,6 +16,12 @@ namespace bedrockRInstall.ui
 
             panel.Add(new Label() { Text = info.Version, Font = Installer.mainFontHeader, TextColor = Colors.White, Style = "bedrockR"}, 15, 15);
             panel.Add(new Label() { Text = info.Description, Font = Installer.mainFont, TextColor = Colors.White, Style = "bedrockR"}, 15, 50);
+            panel.Add(new Label() { TextAlignment = TextAlignment.Right, Text = info.Bundled ? "✓ Bundled" : "X Not Bundled", Font = Installer.mainFont, TextColor = Colors.White, Style = "bedrockR"}, 360, 50);
+
+            panel.Add(new Button() { Text = "Install", Font = Installer.mainFont, Style = "bedrockR"}, 300, 70);
+            panel.Add(new Button() { Text = "View download page", Font = Installer.mainFont, Style = "bedrockR"}, 250, 70);
+            if (info.Bundled)
+                panel.Add(new Button() { Text = "Run", Font = Installer.mainFont, Style = "bedrockR"}, 200, 70);
 
             rowi++;
             return panel;
