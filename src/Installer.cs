@@ -3,17 +3,22 @@ using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Wpf.Forms.Controls;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Application = Eto.Forms.Application;
+using Binding = System.Windows.Data.Binding;
 using Button = Eto.Forms.Button;
 using Color = Eto.Drawing.Color;
+using Font = Eto.Drawing.Font;
+using HorizontalAlignment = System.Windows.Forms.HorizontalAlignment;
 using Orientation = Eto.Forms.Orientation;
 using Padding = Eto.Drawing.Padding;
 using Point = Eto.Drawing.Point;
+using VerticalAlignment = System.Windows.VerticalAlignment;
 
 namespace bedrockRInstall
 {
@@ -22,11 +27,17 @@ namespace bedrockRInstall
 
         public static Color BG = Color.FromRgb(0x202020);
         public static Color ControlBG = Color.FromRgb(0x343434);
+        public static Color Accent = Color.FromRgb(0x4CFF00);
+
         public static HttpClient client = new();
         public static Font mainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 10);
         public static Font mainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 14);
         public HttpRequestMessage onlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
 
+        public static System.Windows.Media.Color EtoColorToWpf(Color c)
+        {
+            return System.Windows.Media.Color.FromArgb((byte)(c.A * 255), (byte)(c.R * 255), (byte)(c.G * 255), (byte)(c.B * 255));
+        }
         public static void Center(Eto.Forms.Window window)
         {
             window.UpdateLayout();
@@ -60,20 +71,98 @@ namespace bedrockRInstall
 
             Eto.Style.Add<Eto.Forms.Button>("bedrockR", con =>
             {
-                con.BackgroundColor = ControlBG;
-                var cont = con.ControlObject as EtoButton;
+                var cont = con.ControlObject as System.Windows.Controls.Button;
                 if (cont == null) return;
-                cont.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xff, 0x48, 0x48, 0x48));
-                var selectedBrush = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xff, 0x4C, 0xff, 0x00));
+                var bgBrush = new SolidColorBrush(EtoColorToWpf(ControlBG));
+                var normalBorderBrush = new SolidColorBrush(EtoColorToWpf(Color.FromRgb(0x3E3E3E)));
+                var selectedBorderBrush = new SolidColorBrush(EtoColorToWpf(Accent));
 
-                var selectedTrigger = new Trigger() { Property = EtoButton.IsFocusedProperty, Value = true };
-                selectedTrigger.Setters.Add(new Setter(EtoButton.BorderBrushProperty, selectedBrush));
+                var focausedTrigger = new Trigger() { Property = System.Windows.Controls.Button.IsFocusedProperty, Value = true };
+                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderThicknessProperty, new Thickness(1)));
+                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, selectedBorderBrush));
 
-                var style = new System.Windows.Style(typeof(EtoButton));
-                style.Setters.Add(new Setter(EtoButton.TemplateProperty, new ControlTemplate(typeof(EtoButton)) { } ));
-                style.Setters.Add(new Setter(EtoButton.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.White)));
-                style.Triggers.Add(selectedTrigger);
+                var mouseOverTrigger = new Trigger() { Property = System.Windows.Controls.Button.IsMouseOverProperty, Value = true };
+                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderThicknessProperty, new Thickness(2)));
+                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, selectedBorderBrush));
+
+                var style = new System.Windows.Style(typeof(System.Windows.Controls.Button));
+
+                var borderFactory = new FrameworkElementFactory(typeof(System.Windows.Controls.Border));
+
+                borderFactory.SetValue(
+                    System.Windows.Controls.Border.BackgroundProperty,
+                    new TemplateBindingExtension(System.Windows.Controls.Border.BackgroundProperty));
+
+                borderFactory.SetValue(
+                    System.Windows.Controls.Border.BorderBrushProperty,
+                    new TemplateBindingExtension(System.Windows.Controls.Border.BorderBrushProperty));
+
+                borderFactory.SetValue(
+                    System.Windows.Controls.Border.BorderThicknessProperty,
+                    new TemplateBindingExtension(System.Windows.Controls.Border.BorderThicknessProperty));
+
+
+                var contentPresenter = new FrameworkElementFactory(typeof(System.Windows.Controls.ContentPresenter));
+
+                contentPresenter.SetValue(
+                    System.Windows.Controls.Border.PaddingProperty,
+                    new TemplateBindingExtension(System.Windows.Controls.Border.PaddingProperty));
+
+                contentPresenter.SetValue(
+                    System.Windows.Controls.Border.HorizontalAlignmentProperty,
+                    System.Windows.HorizontalAlignment.Center);
+
+                contentPresenter.SetValue(
+                System.Windows.Controls.Border.VerticalAlignmentProperty,
+                System.Windows.VerticalAlignment.Center);
+
+                contentPresenter.SetValue(
+                System.Windows.Controls.Border.MarginProperty,
+                new TemplateBindingExtension(System.Windows.Controls.Border.MarginProperty));
+
+
+                borderFactory.AppendChild(contentPresenter);
+
+                var template = new ControlTemplate(typeof(System.Windows.Controls.Button));
+                template.VisualTree = borderFactory;
+
+                style.Setters.Add(new Setter(
+                    System.Windows.Controls.Button.TemplateProperty,
+                    template));
+
+                style.Setters.Add(new Setter(System.Windows.Controls.Button.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.White)));
+                style.Setters.Add(new Setter(System.Windows.Controls.Button.BackgroundProperty, new SolidColorBrush(EtoColorToWpf(ControlBG))));
+                style.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, normalBorderBrush));
+                style.Setters.Add(new Setter(System.Windows.Controls.Button.MarginProperty, new Thickness(2)));
+
+                style.Triggers.Add(focausedTrigger);
+                style.Triggers.Add(mouseOverTrigger);
+
                 cont.Style = style;
+
+                //cont.MouseEnter += (s, e) =>
+                //{
+                //    Console.WriteLine("grsvbed");
+                //    cont.BorderBrush = selectedBorderBrush;
+                //    cont.BorderThickness = new Thickness(1);
+                //};
+
+                //cont.MouseLeave += (s, e) =>
+                //{
+                //    Console.WriteLine("grsvbed");
+                //    cont.BorderBrush = normalBorderBrush;
+                //};
+
+                cont.PreviewMouseDown += (s, e) =>
+                {
+                    //Console.WriteLine("down");
+                    cont.SetValue(System.Windows.Controls.Button.BackgroundProperty, normalBorderBrush);
+                };
+
+                cont.PreviewMouseUp += (s, e) =>
+                {
+                    cont.SetValue(System.Windows.Controls.Button.BackgroundProperty, bgBrush);
+                };
             });
 
         }
@@ -86,7 +175,7 @@ namespace bedrockRInstall
             
             var logoImg = new ImageView()
             {
-                Image = new Bitmap(FileUtils.GetFile("logo.png")).WithSize(500, 130)
+                Image = new Eto.Drawing.Bitmap(FileUtils.GetFile("logo.png")).WithSize(500, 130)
             };
 
             var main = new StackLayout() { Orientation = Orientation.Vertical, HorizontalContentAlignment = Eto.Forms.HorizontalAlignment.Center};
