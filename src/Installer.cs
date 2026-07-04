@@ -1,43 +1,37 @@
 using bedrockRInstall.ui;
+using bedrockRInstall.util;
 using Eto;
-using Eto.Drawing;
 using Eto.Forms;
-using Eto.Wpf.Forms.Controls;
-using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Media;
 using Application = Eto.Forms.Application;
-using Binding = System.Windows.Data.Binding;
 using Button = Eto.Forms.Button;
 using Color = Eto.Drawing.Color;
 using Font = Eto.Drawing.Font;
-using HorizontalAlignment = System.Windows.Forms.HorizontalAlignment;
 using Orientation = Eto.Forms.Orientation;
 using Padding = Eto.Drawing.Padding;
 using Point = Eto.Drawing.Point;
-using VerticalAlignment = System.Windows.VerticalAlignment;
 
 namespace bedrockRInstall
 {
-    public class Installer : Eto.Forms.Form
+    public class Installer : Form
     {
-
-        public static Color BG = Color.FromRgb(0x202020);
-        public static Color ControlBG = Color.FromRgb(0x343434);
+        public static Color Bg = Color.FromRgb(0x202020);
+        public static Color ControlBg = Color.FromRgb(0x343434);
         public static Color Accent = Color.FromRgb(0x4CFF00);
 
-        public static HttpClient client = new();
-        public static Font mainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 10);
-        public static Font mainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 14);
-        public HttpRequestMessage onlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
+        public static HttpClient Client = new();
+        public static Font MainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 10);
+        public static Font MainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 20);
+        public HttpRequestMessage OnlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
 
         public static System.Windows.Media.Color EtoColorToWpf(Color c)
         {
-            return System.Windows.Media.Color.FromArgb((byte)(c.A * 255), (byte)(c.R * 255), (byte)(c.G * 255), (byte)(c.B * 255));
+            return System.Windows.Media.Color.FromArgb((byte)(c.A * 255), (byte)(c.R * 255), (byte)(c.G * 255),
+                (byte)(c.B * 255));
         }
+
         public static void Center(Eto.Forms.Window window)
         {
             window.UpdateLayout();
@@ -62,78 +56,87 @@ namespace bedrockRInstall
 
         public static void SetupStyle()
         {
-
             Eto.Style.Add<TextControl>("bedrockR", con =>
             {
                 con.TextColor = Eto.Drawing.Colors.White;
-                con.Font = mainFont;
+                con.Font = MainFont;
             });
 
-            Eto.Style.Add<Eto.Forms.Button>("bedrockR", con =>
+            Eto.Style.Add<Button>("bedrockR", con =>
             {
                 var cont = con.ControlObject as System.Windows.Controls.Button;
                 if (cont == null) return;
-                var bgBrush = new SolidColorBrush(EtoColorToWpf(ControlBG));
+                var bgBrush = new SolidColorBrush(EtoColorToWpf(ControlBg));
                 var normalBorderBrush = new SolidColorBrush(EtoColorToWpf(Color.FromRgb(0x3E3E3E)));
                 var selectedBorderBrush = new SolidColorBrush(EtoColorToWpf(Accent));
 
-                var focausedTrigger = new Trigger() { Property = System.Windows.Controls.Button.IsFocusedProperty, Value = true };
-                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderThicknessProperty, new Thickness(1)));
-                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, selectedBorderBrush));
+                var focausedTrigger = new Trigger
+                    { Property = UIElement.IsFocusedProperty, Value = true };
+                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Control.BorderThicknessProperty,
+                    new Thickness(1)));
+                focausedTrigger.Setters.Add(new Setter(System.Windows.Controls.Control.BorderBrushProperty,
+                    selectedBorderBrush));
 
-                var mouseOverTrigger = new Trigger() { Property = System.Windows.Controls.Button.IsMouseOverProperty, Value = true };
-                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderThicknessProperty, new Thickness(2)));
-                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, selectedBorderBrush));
+                var mouseOverTrigger = new Trigger
+                    { Property = UIElement.IsMouseOverProperty, Value = true };
+                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Control.BorderThicknessProperty,
+                    new Thickness(2)));
+                mouseOverTrigger.Setters.Add(new Setter(System.Windows.Controls.Control.BorderBrushProperty,
+                    selectedBorderBrush));
 
                 var style = new System.Windows.Style(typeof(System.Windows.Controls.Button));
 
-                var borderFactory = new FrameworkElementFactory(typeof(System.Windows.Controls.Border));
+                var borderFactory = new FrameworkElementFactory(typeof(Border));
 
                 borderFactory.SetValue(
-                    System.Windows.Controls.Border.BackgroundProperty,
-                    new TemplateBindingExtension(System.Windows.Controls.Border.BackgroundProperty));
+                    Border.BackgroundProperty,
+                    new TemplateBindingExtension(Border.BackgroundProperty));
 
                 borderFactory.SetValue(
-                    System.Windows.Controls.Border.BorderBrushProperty,
-                    new TemplateBindingExtension(System.Windows.Controls.Border.BorderBrushProperty));
+                    Border.BorderBrushProperty,
+                    new TemplateBindingExtension(Border.BorderBrushProperty));
 
                 borderFactory.SetValue(
-                    System.Windows.Controls.Border.BorderThicknessProperty,
-                    new TemplateBindingExtension(System.Windows.Controls.Border.BorderThicknessProperty));
+                    Border.BorderThicknessProperty,
+                    new TemplateBindingExtension(Border.BorderThicknessProperty));
 
 
-                var contentPresenter = new FrameworkElementFactory(typeof(System.Windows.Controls.ContentPresenter));
+                var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter));
 
                 contentPresenter.SetValue(
-                    System.Windows.Controls.Border.PaddingProperty,
-                    new TemplateBindingExtension(System.Windows.Controls.Border.PaddingProperty));
+                    Border.PaddingProperty,
+                    new TemplateBindingExtension(Border.PaddingProperty));
 
                 contentPresenter.SetValue(
-                    System.Windows.Controls.Border.HorizontalAlignmentProperty,
+                    FrameworkElement.HorizontalAlignmentProperty,
                     System.Windows.HorizontalAlignment.Center);
 
                 contentPresenter.SetValue(
-                System.Windows.Controls.Border.VerticalAlignmentProperty,
-                System.Windows.VerticalAlignment.Center);
+                    FrameworkElement.VerticalAlignmentProperty,
+                    System.Windows.VerticalAlignment.Center);
 
                 contentPresenter.SetValue(
-                System.Windows.Controls.Border.MarginProperty,
-                new TemplateBindingExtension(System.Windows.Controls.Border.MarginProperty));
+                    FrameworkElement.MarginProperty,
+                    new TemplateBindingExtension(FrameworkElement.MarginProperty));
 
 
                 borderFactory.AppendChild(contentPresenter);
 
-                var template = new ControlTemplate(typeof(System.Windows.Controls.Button));
-                template.VisualTree = borderFactory;
+                var template = new ControlTemplate(typeof(System.Windows.Controls.Button))
+                {
+                    VisualTree = borderFactory
+                };
 
                 style.Setters.Add(new Setter(
-                    System.Windows.Controls.Button.TemplateProperty,
+                    System.Windows.Controls.Control.TemplateProperty,
                     template));
 
-                style.Setters.Add(new Setter(System.Windows.Controls.Button.ForegroundProperty, new SolidColorBrush(System.Windows.Media.Colors.White)));
-                style.Setters.Add(new Setter(System.Windows.Controls.Button.BackgroundProperty, new SolidColorBrush(EtoColorToWpf(ControlBG))));
-                style.Setters.Add(new Setter(System.Windows.Controls.Button.BorderBrushProperty, normalBorderBrush));
-                style.Setters.Add(new Setter(System.Windows.Controls.Button.MarginProperty, new Thickness(2)));
+                style.Setters.Add(new Setter(System.Windows.Controls.Control.ForegroundProperty,
+                    new SolidColorBrush(Colors.White)));
+                style.Setters.Add(new Setter(System.Windows.Controls.Control.BackgroundProperty,
+                    new SolidColorBrush(EtoColorToWpf(ControlBg))));
+                style.Setters.Add(new Setter(System.Windows.Controls.Control.BorderBrushProperty, normalBorderBrush));
+                style.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(2)));
 
                 style.Triggers.Add(focausedTrigger);
                 style.Triggers.Add(mouseOverTrigger);
@@ -156,49 +159,58 @@ namespace bedrockRInstall
                 cont.PreviewMouseDown += (s, e) =>
                 {
                     //Console.WriteLine("down");
-                    cont.SetValue(System.Windows.Controls.Button.BackgroundProperty, normalBorderBrush);
+                    cont.SetValue(System.Windows.Controls.Control.BackgroundProperty, normalBorderBrush);
                 };
 
                 cont.PreviewMouseUp += (s, e) =>
                 {
-                    cont.SetValue(System.Windows.Controls.Button.BackgroundProperty, bgBrush);
+                    cont.SetValue(System.Windows.Controls.Control.BackgroundProperty, bgBrush);
                 };
             });
-
         }
+
         public Installer()
         {
             Title = "bedrockR Installer";
             Resizable = false;
             ClientSize = new Eto.Drawing.Size(500, 200);
-            BackgroundColor = BG;
-            
-            var logoImg = new ImageView()
+            BackgroundColor = Bg;
+
+            var logoImg = new ImageView
             {
                 Image = new Eto.Drawing.Bitmap(FileUtils.GetFile("logo.png")).WithSize(500, 130)
             };
 
-            var main = new StackLayout() { Orientation = Orientation.Vertical, HorizontalContentAlignment = Eto.Forms.HorizontalAlignment.Center};
-            var top = new StackLayout() { Orientation = Orientation.Horizontal };
-            var bottom = new StackLayout() { Orientation = Orientation.Horizontal };
+            var main = new StackLayout
+            {
+                Orientation = Orientation.Vertical, HorizontalContentAlignment = Eto.Forms.HorizontalAlignment.Center
+            };
+            var top = new StackLayout { Orientation = Orientation.Horizontal };
+            var bottom = new StackLayout { Orientation = Orientation.Horizontal };
 
             var bundledInfo = FileUtils.GetBundledVersionInfo();
 
-            var installBundledButton = new Button() {Style = "bedrockR" };
+            var installBundledButton = new Button { Style = "bedrockR" };
             if (bundledInfo != null)
                 installBundledButton.Text = "Install Bundled (" + bundledInfo.Version + ")";
             else
                 installBundledButton.Enabled = false;
 
-            var installOnlineButton = new Button((o, e) => { new VersionsForm().ShowModal(this); }) { Text = "Install Online", Style = "bedrockR", Enabled = false };
+            var installOnlineButton = new Button((o, e) => { new VersionsForm().ShowModal(this); })
+                { Text = "Install Online", Style = "bedrockR", Enabled = false };
             //var versionsButton = new Button((o,e) => { new VersionsForm().ShowModal(this); }) { Text = "View Versions", Style = "bedrockR", Enabled = false };
 
             bool online = false;
             try
             {
-                var onlineRes = client.Send(onlineReq);
+                var onlineRes = Client.Send(OnlineReq);
                 online = onlineRes.IsSuccessStatusCode;
-            } catch (Exception) { }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             installOnlineButton.Enabled = online;
 
             main.Items.Add(top);

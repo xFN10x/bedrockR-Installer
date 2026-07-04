@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
+﻿using System.Text.Json.Serialization;
 
-namespace bedrockRInstall
+namespace bedrockRInstall.util
 {
     [JsonSourceGenerationOptions(IncludeFields = true)]
     [JsonSerializable(typeof(JsonVersionInfo))]
     [JsonSerializable(typeof(Uploader))]
-    [JsonSerializable(typeof(GHRelease))]
+    [JsonSerializable(typeof(GhRelease))]
     [JsonSerializable(typeof(Reactions))]
     [JsonSerializable(typeof(Author))]
     [JsonSerializable(typeof(Asset))]
-    [JsonSerializable(typeof(List<GHRelease>))]
+    [JsonSerializable(typeof(List<GhRelease>))]
     [JsonSerializable(typeof(List<JsonVersionInfo>))]
     [JsonSerializable(typeof(string))]
     [JsonSerializable(typeof(int))]

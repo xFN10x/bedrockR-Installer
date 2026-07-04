@@ -1,19 +1,16 @@
-﻿using bedrockRInstall;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 
-namespace bedrockRInstall
+namespace bedrockRInstall.util
 {
     public class FileUtils
     {
-        private static Assembly assm = Assembly.GetExecutingAssembly();
-        private static HttpClient client = new();
+        private static Assembly _assm = Assembly.GetExecutingAssembly();
+
+        private static HttpClient _client = new(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+        });
 
         public readonly static Dictionary<string, int> SupportedVersions = new()
         {
@@ -31,13 +28,13 @@ namespace bedrockRInstall
             ["a1.2"] = -1,
             ["a1.1"] = -2,
         };
-        
+
         public readonly static Dictionary<string, string> VersionDescriptions = new()
         {
             ["a2.1"] = "Alpha release, adds settings menu, and themes.",
             ["a2.0.3"] = "Hotfix, Fixes the block downloading issue from a2.0.2",
         };
-        
+
 
         /// <summary>
         /// Get a stream of an embedded asset.
@@ -50,28 +47,42 @@ namespace bedrockRInstall
             {
                 Console.WriteLine(item);
             }*/
-            return assm.GetManifestResourceStream("bedrockRInstall.assets." + path);
+            return _assm.GetManifestResourceStream("bedrockRInstall.assets." + path);
         }
 
-        public static JsonVersionInfo[] GetVersions()
+        public static JsonVersionInfo[]? GetVersions()
         {
-            var res = client.Send(new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/xFN10x/bedrockR/releases"));
-            var releases = JsonSerializer.Deserialize<List<GHRelease>>(res.Content.ReadAsStream(), JsonVersionInfoContext.Default.ListGHRelease);
+            if (_cachedVersions != null) return _cachedVersions;
+            var reqUrl = "https://api.github.com/repos/xFN10x/bedrockR/releases";
+            var body = new HttpRequestMessage(HttpMethod.Get, reqUrl);
+            body.Headers.Add("User-Agent", "bedrockR Installer");
+            Console.WriteLine("Sending to {0}: {1}.", reqUrl, body);
+
+            var res = _client.Send(body);
+            Console.WriteLine("Got response from github, code {0}, {1}", res.StatusCode,
+                res.Content.ReadAsStringAsync().Result);
+            if (!res.IsSuccessStatusCode) return null;
+            var releases = JsonSerializer.Deserialize<List<GhRelease>>(res.Content.ReadAsStream(),
+                JsonVersionInfoContext.Default.ListGHRelease);
             List<JsonVersionInfo> vers = new();
-            
+
             foreach (var ghRelease in releases)
             {
                 vers.Add(JsonVersionInfo.FromRelease(ghRelease));
             }
 
-            return vers.ToArray<JsonVersionInfo>();
+            _cachedVersions = vers.ToArray<JsonVersionInfo>();
+            return _cachedVersions;
         }
+
+        private static JsonVersionInfo[]? _cachedVersions;
 
         public static JsonVersionInfo? GetBundledVersionInfo()
         {
             var stream = GetFile("bundled.json");
             if (stream != null)
-                return JsonSerializer.Deserialize<JsonVersionInfo>(stream, JsonVersionInfoContext.Default.JsonVersionInfo);
+                return JsonSerializer.Deserialize<JsonVersionInfo>(stream,
+                    JsonVersionInfoContext.Default.JsonVersionInfo);
             else
                 return null;
         }
