@@ -9,6 +9,13 @@ namespace bedrockRInstall
 {
     [JsonSourceGenerationOptions(IncludeFields = true)]
     [JsonSerializable(typeof(JsonVersionInfo))]
+    [JsonSerializable(typeof(Uploader))]
+    [JsonSerializable(typeof(GHRelease))]
+    [JsonSerializable(typeof(Reactions))]
+    [JsonSerializable(typeof(Author))]
+    [JsonSerializable(typeof(Asset))]
+    [JsonSerializable(typeof(List<GHRelease>))]
+    [JsonSerializable(typeof(List<JsonVersionInfo>))]
     [JsonSerializable(typeof(string))]
     [JsonSerializable(typeof(int))]
     public partial class JsonVersionInfoContext : JsonSerializerContext

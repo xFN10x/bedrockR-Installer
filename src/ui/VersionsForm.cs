@@ -36,8 +36,8 @@ namespace bedrockRInstall.ui
             var scroll = new Scrollable() { ExpandContentHeight = false};
             var table = new TableLayout();
             scroll.Content = table;
-
-
+            
+            
             table.Rows.Add(CreateVersionRow(FileUtils.GetBundledVersionInfo()));
             table.Rows.Add(CreateVersionRow(new JsonVersionInfo() { Version = "test", NumericVersion = 0, Bundled = false}));
             table.Rows.Add(CreateVersionRow(new JsonVersionInfo() { Version = "test", NumericVersion = 0, Bundled = false}));
