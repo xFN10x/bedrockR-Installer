@@ -1,3 +1,4 @@
+using System.Text.Json;
 using bedrockRInstall.ui;
 using bedrockRInstall.util;
 using Eto;
@@ -100,6 +101,10 @@ namespace bedrockRInstall
                     Border.BorderThicknessProperty,
                     new TemplateBindingExtension(Border.BorderThicknessProperty));
 
+                borderFactory.SetValue(
+                    Border.PaddingProperty,
+                    new TemplateBindingExtension(Border.PaddingProperty));
+
 
                 var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter));
 
@@ -137,6 +142,7 @@ namespace bedrockRInstall
                     new SolidColorBrush(EtoColorToWpf(ControlBg))));
                 style.Setters.Add(new Setter(System.Windows.Controls.Control.BorderBrushProperty, normalBorderBrush));
                 style.Setters.Add(new Setter(FrameworkElement.MarginProperty, new Thickness(2)));
+                style.Setters.Add(new Setter(Border.PaddingProperty, new Thickness(5)));
 
                 style.Triggers.Add(focausedTrigger);
                 style.Triggers.Add(mouseOverTrigger);

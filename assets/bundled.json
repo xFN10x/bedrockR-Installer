@@ -2,5 +2,8 @@
   "version": "a2.1",
   "semVer": 9,
   "bundled": true,
-  "desc": "Alpha release, adds settings menu, and themes."
+  "desc": "Alpha release, adds settings menu, and themes.",
+  "fileLoc": "bundled.jar",
+  "jdkLoc": "bundled.zip",
+  "installerFormat": 0
 }

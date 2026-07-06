@@ -1,6 +1,17 @@
-﻿using Eto.Drawing;
+﻿using System.Reflection;
+using System.Windows.Forms;
+using Eto.Drawing;
 using Eto.Forms;
 using bedrockRInstall.util;
+using Eto;
+using GLib;
+using Button = Eto.Forms.Button;
+using FileUtils = bedrockRInstall.util.FileUtils;
+using HorizontalAlignment = Eto.Forms.HorizontalAlignment;
+using Label = Eto.Forms.Label;
+using Orientation = Eto.Forms.Orientation;
+using Padding = Eto.Drawing.Padding;
+using Process = System.Diagnostics.Process;
 
 namespace bedrockRInstall.ui
 {
@@ -10,43 +21,64 @@ namespace bedrockRInstall.ui
 
         public static TableRow CreateVersionRow(JsonVersionInfo info)
         {
-            var panel = new PixelLayout { BackgroundColor = _rowi % 2 == 1 ? Colors.DarkGray : Installer.Bg };
-
-            panel.Add(
-                new Label
-                {
-                    Text = info.Version, Font = Installer.MainFontHeader, TextColor = Colors.White, Style = "bedrockR"
-                }, 15, 15);
-            panel.Add(
+            var mainPanel = new StackLayout()
+            {
+                BackgroundColor = _rowi % 2 == 1 ? Colors.DarkGray : Installer.Bg,
+                Spacing = 10,
+                Padding = new Padding(10),
+                Orientation = Orientation.Vertical,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch
+            };
+            var topPanel = new TableLayout();
+            var buttonsPanel = new StackLayout()
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10
+            };
+            mainPanel.Items.Add(topPanel);
+            mainPanel.Items.Add(
                 new Label
                 {
                     Text = info.Description, Font = Installer.MainFont, TextColor = Colors.White, Style = "bedrockR"
-                }, 15, 50);
-            panel.Add(
+                });
+            mainPanel.Items.Add(buttonsPanel);
+
+            topPanel.Rows.Add(
                 new Label
                 {
-                    TextAlignment = TextAlignment.Right, Text = info.Bundled ? "✓ Bundled" : "X Not Bundled",
-                    Font = Installer.MainFont, TextColor = Colors.White, Style = "bedrockR"
-                }, 360, 15);
-            StackLayout buttonsLay = new()
-            {
-                Orientation = Orientation.Horizontal,
-                VerticalContentAlignment = VerticalAlignment.Bottom,
-                Padding = new Padding(10,3),
-                Spacing = 10
-            };
-            buttonsLay.Items.Add(new Button
+                    Text = info.Version,
+                    Font = Installer.MainFontHeader,
+                    TextColor = Colors.White,
+                    Style = "bedrockR"
+                });
+
+            topPanel.Rows.Add(
+                new Label
+                {
+                    TextAlignment = TextAlignment.Right,
+
+                    Text = info.Bundled ? "✓ Bundled" : "✗ Not Bundled",
+                    Font = Installer.MainFont,
+                    TextColor = Colors.White,
+                    Style = "bedrockR"
+                });
+
+            buttonsPanel.Items.Add(new Button
                 { Text = "Install", Font = Installer.MainFont, Style = "bedrockR" });
-            buttonsLay.Items.Add(new Button
+            buttonsPanel.Items.Add(new Button((sender, args) =>
+                {
+                    if (EtoEnvironment.Platform.IsWindows)
+                        Process.Start("explorer",
+                            "\"https://bedrockr.xplate.dev/download?release=" + info.TagName + "\"");
+                })
                 { Text = "View download page", Font = Installer.MainFont, Style = "bedrockR" });
             if (info.Bundled)
-                buttonsLay.Items.Add(new Button
+                buttonsPanel.Items.Add(new Button
                     { Text = "Run", Font = Installer.MainFont, Style = "bedrockR" });
 
-            panel.Add(buttonsLay, 0, 80);
 
             _rowi++;
-            return panel;
+            return mainPanel;
         }
 
         public VersionsForm()
