@@ -6,7 +6,7 @@ namespace bedrockRInstall.util
     {
         [JsonPropertyName("version")] public required string Version;
         private string _tagName;
-        
+
         [JsonPropertyName("tagName")]
         public string TagName
         {

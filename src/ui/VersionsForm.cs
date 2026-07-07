@@ -19,12 +19,15 @@ namespace bedrockRInstall.ui
     {
         private static int _rowi = 0;
 
+        private static Size WinSize = new(480, 240);
+
         public static TableRow CreateVersionRow(JsonVersionInfo info)
         {
             var mainPanel = new StackLayout()
             {
                 BackgroundColor = _rowi % 2 == 1 ? Colors.DarkGray : Installer.Bg,
                 Spacing = 10,
+                Width = WinSize.Width - 20,
                 Padding = new Padding(10),
                 Orientation = Orientation.Vertical,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch
@@ -85,10 +88,14 @@ namespace bedrockRInstall.ui
         {
             Title = "bedrockR Versions";
             Resizable = false;
-            ClientSize = new Size(480, 240);
+            ClientSize = WinSize;
             BackgroundColor = Installer.Bg;
 
-            var scroll = new Scrollable { ExpandContentHeight = false };
+            var scroll = new Scrollable
+            {
+                ExpandContentHeight = false,
+                ExpandContentWidth = false
+            };
             var table = new TableLayout();
             scroll.Content = table;
 

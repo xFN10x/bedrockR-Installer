@@ -196,7 +196,9 @@ namespace bedrockRInstall
 
             var bundledInfo = FileUtils.GetBundledVersionInfo();
 
-            var installBundledButton = new Button { Style = "bedrockR" };
+            var installBundledButton =
+                new Button((sender, args) => InstallingForm.Install(FileUtils.GetBundledVersionInfo()))
+                    { Style = "bedrockR" };
             if (bundledInfo != null)
                 installBundledButton.Text = "Install Bundled (" + bundledInfo.Version + ")";
             else

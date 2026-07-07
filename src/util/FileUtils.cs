@@ -12,7 +12,7 @@ namespace bedrockRInstall.util
             PooledConnectionLifetime = TimeSpan.FromMinutes(5)
         });
 
-        public string readonly int installerVer = 0;
+        public static readonly int installerVer = 0;
 
 
         /// <summary>

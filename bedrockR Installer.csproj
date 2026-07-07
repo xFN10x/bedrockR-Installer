@@ -20,6 +20,7 @@
         <IncludeNativeLibrariesForSelfExtract>True</IncludeNativeLibrariesForSelfExtract>
         <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
         <RootNamespace>bedrockRInstall</RootNamespace>
+        <ApplicationIcon>assets\Icon_huge.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,6 +34,7 @@
 
     <ItemGroup>
         <Compile Include="src\Installer.cs"/>
+        <Compile Include="src\ui\InstallingForm.cs"/>
         <Compile Include="src\ui\VersionsForm.cs"/>
         <Compile Include="src\util\FileUtils.cs"/>
         <Compile Include="src\util\JsonVersionInfo.cs"/>
