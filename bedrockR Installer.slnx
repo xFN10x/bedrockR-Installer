@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="bedrockR Installer.csproj" />
+    <Project Path="bedrockR Installer.csproj">
+        <Deploy Solution="Release|*"/>
+    </Project>
 </Solution>

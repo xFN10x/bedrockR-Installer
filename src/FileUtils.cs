@@ -28,7 +28,16 @@ namespace bedrockRInstall
 
         public static JsonVersionInfo? GetBundledVersionInfo()
         {
-            var stream = GetFile("bundled.json");
+            var stream = GetFile("example.installer.json");
+            if (stream != null)
+                return JsonSerializer.Deserialize<JsonVersionInfo>(stream, JsonVersionInfoContext.Default.JsonVersionInfo);
+            else
+                return null;
+        }
+
+        public static JsonVersionInfo? GetExampleVersionInfo()
+        {
+            var stream = GetFile("example.installer.json");
             if (stream != null)
                 return JsonSerializer.Deserialize<JsonVersionInfo>(stream, JsonVersionInfoContext.Default.JsonVersionInfo);
             else

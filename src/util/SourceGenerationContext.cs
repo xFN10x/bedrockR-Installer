@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
+﻿using System.Text.Json.Serialization;
 
-namespace bedrockRInstall
+namespace bedrockRInstall.util
 {
     [JsonSourceGenerationOptions(IncludeFields = true)]
     [JsonSerializable(typeof(JsonVersionInfo))]
+    [JsonSerializable(typeof(List<JsonVersionInfo>))]
     [JsonSerializable(typeof(string))]
     [JsonSerializable(typeof(int))]
     public partial class JsonVersionInfoContext : JsonSerializerContext

@@ -9,10 +9,12 @@ namespace bedrockRInstall
     {
         [JsonPropertyName("version")]
         public required string Version;
-        [JsonPropertyName("semVer")]
+        [JsonPropertyName("numVer")]
         public required int NumericVersion;
+        [JsonPropertyName("winVer")]
+        public required string SemVersion;
+        [JsonPropertyName("jdkVer")]
+        public required int JdkLevel;
 
-        [JsonPropertyName("bundled")]
-        public bool Bundled;
     }
 }
