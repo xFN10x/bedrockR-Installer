@@ -22,10 +22,10 @@ namespace bedrockRInstall
         public static Color ControlBg = Color.FromRgb(0x343434);
         public static Color Accent = Color.FromRgb(0x4CFF00);
 
-        public static HttpClient Client = new();
+        //public static HttpClient Client = new();
         public static Font MainFont = Font.FromStream(FileUtils.GetFile("font.otf"), 10);
         public static Font MainFontHeader = Font.FromStream(FileUtils.GetFile("font.otf"), 20);
-        public HttpRequestMessage OnlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
+        //public HttpRequestMessage OnlineReq = new(HttpMethod.Get, "http://clients3.google.com/generate_204");
 
         public static System.Windows.Media.Color EtoColorToWpf(Color c)
         {
@@ -204,23 +204,6 @@ namespace bedrockRInstall
             else
                 installBundledButton.Enabled = false;
 
-            var installOnlineButton = new Button((o, e) => { new VersionsForm().ShowModal(this); })
-                { Text = "Install Online", Style = "bedrockR", Enabled = false };
-            //var versionsButton = new Button((o,e) => { new VersionsForm().ShowModal(this); }) { Text = "View Versions", Style = "bedrockR", Enabled = false };
-
-            bool online = false;
-            try
-            {
-                var onlineRes = Client.Send(OnlineReq);
-                online = onlineRes.IsSuccessStatusCode;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-
-            installOnlineButton.Enabled = online;
-
             main.Items.Add(top);
             main.Items.Add(bottom);
 
@@ -229,7 +212,6 @@ namespace bedrockRInstall
             bottom.Padding = new Padding(10, 40);
             bottom.Spacing = 10;
             bottom.Items.Add(installBundledButton);
-            bottom.Items.Add(installOnlineButton);
 
             Content = main;
             Center(this);

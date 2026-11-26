@@ -33,10 +33,7 @@
     </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="src\FileUtils.cs" />
-		<Compile Include="src\Installer.cs" />
-		<Compile Include="src\JsonVersionInfo.cs" />
-		<Compile Include="src\SourceGenerationContext.cs" />
+		<Compile Include="src\**\*" />
 		<EmbeddedResource Include="assets/**/*"></EmbeddedResource>
 	</ItemGroup>
 
